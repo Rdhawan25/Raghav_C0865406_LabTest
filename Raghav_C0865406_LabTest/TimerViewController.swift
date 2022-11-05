@@ -16,6 +16,7 @@ class TimerViewController: UIViewController {
     var seconds: Int = 0
     var pickerCount:Int = 0
     var timer2 = Timer()
+    var player : AVAudioPlayer?
     
     @IBOutlet weak var datePickerView: UIDatePicker!
     @IBOutlet weak var startButton: UIButton!
@@ -34,7 +35,7 @@ class TimerViewController: UIViewController {
     
     
     @IBAction func startTimePickerButtonTapped(_ sender: Any) {
-        playSound()
+        //playSound()
         pickerCount = Int(datePickerView.countDownDuration)
         let time = secondsToHoursMinutesSeconds(seconds: pickerCount)
         let timeString = getTimeString(hours: time.0, minutes: time.1, seconds: time.2)
@@ -55,7 +56,7 @@ class TimerViewController: UIViewController {
         if pickerCount == 0{
             timer2.invalidate()
             timeLabel.text = "00:00:00"
-//            playSound()
+            playSound()
             return
         }
         pickerCount = pickerCount - 1
@@ -84,17 +85,18 @@ class TimerViewController: UIViewController {
         return timeStr
     }
     
-    func playSound(){
-        var audioURL = NSURL(fileURLWithPath: Bundle.main.path(forResource: "radar_ios_7", ofType: "mp3")!)
-        var player = AVAudioPlayer()
-        do{
-            player = try AVAudioPlayer(contentsOf: audioURL as URL)
+    func playSound() {
+        guard let path = Bundle.main.path(forResource: "radar_ios_7", ofType:"mp3") else {
+            return }
+        let url = URL(fileURLWithPath: path)
+        
+        do {
+            player = try AVAudioPlayer(contentsOf: url)
+            player?.play()
+            
+        } catch let error {
+            print(error.localizedDescription)
         }
-        catch _ as NSError{
-            fatalError()
-        }
-        player.prepareToPlay()
-        player.play()
     }
     
     
